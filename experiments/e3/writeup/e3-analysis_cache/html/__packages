@@ -1,0 +1,16 @@
+base
+knitr
+MASS
+ggplot2
+Matrix
+lme4
+xtable
+plyr
+lattice
+LMERConvenienceFunctions
+lmerTest
+reshape2
+pander
+dtplyr
+data.table
+dplyr
