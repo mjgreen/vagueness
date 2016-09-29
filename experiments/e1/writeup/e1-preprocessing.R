@@ -1,7 +1,4 @@
-# Preprocessing E1
-
-```{r makeDataFrame}
-dat <- read.delim("data_raw.txt", header=FALSE)
+dat <- read.delim("e1-data_raw.txt", header=FALSE)
 names(dat) <- c("condition", "leftN", "rightN", "vgn", "side", "string", "subject", "rt", "error")
 dat$condition <- as.factor(dat$condition)
 # trial
@@ -27,5 +24,4 @@ dat$c_Vgn <- ifelse(dat$Vgn=='Crisp', -.5, .5)
 dat$logrt <- log(dat$rt)
 dat <- subset(dat, select=c(subject, trial, leftN, rightN, side, string, Vgn, c_Vgn, Ord, Qty, Gap, c_Gap, error, rt, logrt))
 row.names(dat) <- NULL
-write.table(x=dat, "../data.txt", quote=FALSE, sep="\t", row.names=FALSE)
-```
+write.table(x=dat, "e1-data.txt", quote=FALSE, sep="\t", row.names=FALSE)
