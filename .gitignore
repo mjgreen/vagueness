@@ -12,7 +12,6 @@
 **/*.log
 **/*.synctex.gz
 **/*.ttt
-**/*\_cache
 **/octave-core
 **/diary
 papers/springer-chapter/book.bbl
