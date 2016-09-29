@@ -26,6 +26,8 @@ Each subject saw 192 trials, being 3 cycles of 64 trials. There were 38 particip
 Trial Procedure: 
 First an instruction that was a referring expression was presented until participants dismissed it with a key press. Then the squares with dots were presented until the participant responded with a key press, with a 60 second timeout if they did not respond.
 
+In this experiment all instructions used *Number* instruction format.
+
 ```{r showInstructions, echo=FALSE, cache=TRUE}
 v = c("crisp", "crisp", "vague", "vague")
 n = c('number', 'number', 'number', 'number')

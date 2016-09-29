@@ -25,6 +25,8 @@ Each subject saw 192 trials, being 3 cycles of 64 trials. There were 40 subjects
 Trial Procedure:
 First an instruction was presented until subjects dismissed it with a key press. Then a grey screen was presented for 1 second. Then a target was presented for 2 seconds. Then a grey screen was presented for 1 second. Then the squares with dots were presented until the subject responded, with a 10 second timeout if they did not respond.
 
+In this experiment all instructions used *Verbal* instruction format.
+
 ```{r getdata}
 rawdata <- read.delim('e4-data.txt')
 ```
