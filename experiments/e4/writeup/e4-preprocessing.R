@@ -1,21 +1,29 @@
-```{r readdata}
-dat <- read.delim("../rawdata.txt", stringsAsFactors = FALSE)
+if (file.exists('e4-rawdata.txt')) {
+  dat <- read.delim(file="e4-rawdata.txt", header=T, stringsAsFactors=FALSE)
+} else {
+  system(wait=TRUE, paste("head -n 1 ", "../../experimentCode","/output/", "subject01.data ", "> ", "rawdata.txt", sep=""))
+  system(wait=TRUE, paste("tail -q -n +2 ", "../../experimentCode", "/output/", "*.data ",  ">> ", "rawdata.txt", sep=""))
+  dat <- read.delim(file="e4-rawdata.txt", header=T, stringsAsFactors=FALSE)
+}
 
 # declare local variables
-number_of_valid_subjects <- 38
-number_of_rows <- 7296
-number_of_trials_per_subject <- number_of_rows / number_of_valid_subjects # 192
+Selection_of_valid_subjects <- 40
+Selection_of_rows <- 7680
+Selection_of_trials_per_subject <- Selection_of_rows / Selection_of_valid_subjects # 192
 
 # sort out borderline responses into expected near and far
-dat$RESPONSE <- as.character(dat$RESPONSE)
+# How many squares in the square they chose? 
+dat$RESPONSE <- as.character(dat$key)
 for (row in 1 : nrow(dat) ) {
   switch(dat[row,'RESPONSE'],
-         'LEFT' = {dat[row, 'choice'] <- dat[row, 'Left']},
-         'MIDDLE' = {dat[row, 'choice'] <- dat[row, 'Mid']},
-         'RIGHT' = {dat[row, 'choice'] <- dat[row, 'Right']}         
+         'L' = {dat[row, 'choice'] <- dat[row, 'Lft']},
+         'M' = {dat[row, 'choice'] <- dat[row, 'Mid']},
+         'R' = {dat[row, 'choice'] <- dat[row, 'Rgt']}         
   )
 }
-dat$crossed=paste('Con',dat$Condition,':Quan',dat$Quantity,':Item',dat$Item,sep="")
+dat$Item <- dat$Itm
+dat$Itm <- NULL
+dat$crossed=paste('Con',dat$Cnd,':Quan',dat$Qty,':Item',dat$Item,sep="")
 
 dat[dat$crossed=='Con1:Quan1:Item1', 'ResponseExpected'] <-  6 
 dat[dat$crossed=='Con1:Quan1:Item1', 'ResponseNear']     <- 15  
@@ -155,15 +163,13 @@ for ( row in 1:nrow(dat) ) {
            ifelse(dat[row, 'isResponseNear']==TRUE, 'Near', 'Far') ) 
 }
 
-## treat variables
-
 # SUBJECT
 # ensure Subject is a factor 
-dat$Subject=factor(paste("s",sprintf("%02d",dat$Subject),sep=""))
+dat$Subject=factor(paste("s",sprintf("%02d",dat$Sub),sep=""))
 
 # TRIAL
 # Trial for subject, 1 to 192
-dat$Trial = rep(x = 1:number_of_trials_per_subject, times = number_of_valid_subjects)
+dat$Trial = rep(x = 1:Selection_of_trials_per_subject, times = Selection_of_valid_subjects)
 
 # make a centred Trial for modeling
 dat$c_Trl <-dat$Trial - mean(dat$Trial)
@@ -217,48 +223,50 @@ dat[dat$Item == "36:45:54", "item_mean_ratio_scaled"] <-    0.89861574
 
 # VAGUENESS
 # Create a factor coding for Vagueness
-dat[ dat$Condition==1 , 'Vagueness'] <- 'Vague'
-dat[ dat$Condition==2 , 'Vagueness'] <- 'Crisp'
-dat[ dat$Condition==3 , 'Vagueness'] <- 'Vague'
-dat[ dat$Condition==4 , 'Vagueness'] <- 'Crisp'
+dat[ dat$Cnd==1 , 'Vagueness'] <- 'Vague'
+dat[ dat$Cnd==2 , 'Vagueness'] <- 'Crisp'
+dat[ dat$Cnd==3 , 'Vagueness'] <- 'Vague'
+dat[ dat$Cnd==4 , 'Vagueness'] <- 'Crisp'
 dat$Vagueness <- as.factor(dat$Vagueness)
 
 # manually center Vagueness
 dat$c_Vag <- ifelse(dat$Vagueness=='Crisp', -.5, .5)
 
 dat$Selection = ""
-dat[dat$Condition %in% c(3,4), "Selection"] <- "Comparison"
-dat[dat$Condition %in% c(1,2), "Selection"] <- "Matching"
-dat$c_Sel <- ifelse(dat$Selection=="Comparison", -.5, .5)
+dat[dat$Cnd %in% c(1,2), "Selection"] <- "Matching"
+dat[dat$Cnd %in% c(3,4), "Selection"] <- "Comparison"
+dat$c_Sel <- ifelse(dat$Selection=="Matching", .5, -.5)
 dat$Selection <- as.factor(dat$Selection)
 
-# remove one zero RT by replacing with NA
-dat$RT[dat$RT==0]<-NA
+# remove redundant confusing columns
+dat$Sub <- NULL
+dat$Trl <- NULL
 
 # ORDER
 # give the levels of Order meaningful names
-dat$Order <- factor(dat$Order, levels=c(1,2), labels=c('LtoR','RtoL'))
+dat$Order <- factor(dat$Ord, levels=c(1,2), labels=c('LtoR','RtoL'))
 
 # make a manually centred Order
 dat$c_Ord <- ifelse(dat$Order=="LtoR",-.5,.5)
 
 # QUANTITY
 # give the levels of Quantity meaningful names
-dat$Quantity <- factor(dat$Quantity, levels=c(1,2), labels=c('Small','Large'))
+dat$Quantity <- factor(dat$Qty, levels=c(1,2), labels=c('Small','Large'))
 
 # make a manually centred Quantity
 dat$c_Qty <- ifelse(dat$Quantity=="Small",-.5,.5)
 
 # INSTRUCTION
-# add number of characters in the instruction # 29 30 34 36 38
-dat$nchar_instr = nchar(as.character(dat$Instruction))
-dat$nchar_instr_scaled = as.vector(scale(nchar(as.character(dat$Instruction)), scale=TRUE))
+# add Selection of characters in the instruction # 29 30 34 36 38
+dat$nchar_instr = nchar(as.character(dat$Ins))
+dat$nchar_instr_scaled = as.vector(scale(nchar(as.character(dat$Ins)), scale=TRUE))
 
 # make Instruction be a factor (17 levels)
-dat$Instruction <- as.factor(dat$Instruction) 
+dat$Ins <- as.factor(dat$Ins) 
 
 # RT
 # add transformations of RT
+dat$RT <- dat$rt; dat$rt <-  NULL
 dat$RT_RecSqd    <- 1/dat$RT^2
 dat$RT_Rec       <- 1/dat$RT
 dat$RT_RecSqt    <- 1/sqrt(dat$RT) 
@@ -267,41 +275,15 @@ dat$RT_sqt       <- sqrt(dat$RT)
 dat$RT_raw       <- dat$RT
 dat$RT_sqd       <- dat$RT^2 
 
-# The dat data set contains *all* trials including impossible trials 
-# and is mainly for graphs comparing different removals
-
 # lose impossible trials
 dd <- dat
-dd$RT[dd$RT == 1 ] <- NA
-dd$RT[dd$RT > 40000 ] <- NA
+dd$RT[dd$RT > 9000 ] <- NA
 dd <- dd[complete.cases(dd),]
 row.names(dd) <- NULL
 
-# add preceding RT: because we removed impossible trials, the value for preceding RT for a trial following an impossible trial is the value of the trial that preceded the impossible trial.
-dd$RTprev <- NA
-for (s in levels(dd$Subject)) {
-  nrows = nrow(dd[dd$Subject==s,])
-  for (i in 1:nrows) {
-    if (i==1) {
-      dd[dd$Subject==s, "RTprev"][i] <- dd[dd$Subject==s, "RT"][i]
-    }
-    else
-      dd[dd$Subject==s, "RTprev"][i] <- dd[dd$Subject==s, "RT"][i-1]
-  }
-}
-
-# add transformations of previous RT
-dd$RTprev_RecSqd    <- 1/dd$RTprev^2
-dd$RTprev_Rec       <- 1/dd$RTprev
-dd$RTprev_RecSqt0   <- 1/sqrt(dd$RTprev) 
-dd$RTprev_RecSqt    <- as.vector(scale( 1/sqrt(dd$RTprev)  ))
-dd$RTprev_log       <- log(dd$RTprev)
-dd$RTprev_sqt       <- sqrt(dd$RTprev)
-dd$RTprev_raw       <- dd$RTprev
-dd$RTprev_sqd       <- dd$RTprev^2
-
-# save dd as data.Rda
-# This data set non-impossible trials and renamed/recomputed variables
-dd2 <- subset(dd, select=c(Subject, Trial, Item, c_Itm, Vagueness, c_Vag, Selection, c_Sel, Instruction, Order, Quantity, RT, RT_log, switchResponse))
-write.table(dd2, file="../data.txt")
-```
+dd$Condition <- as.factor(paste(dd$Selection,dd$Vagueness, sep=' '))
+dd$Target <- dd$Prm
+foo <- subset(dd, select=c(
+  "Subject", "Trial", "Condition", "Order", "Quantity", "Vagueness", "c_Vag", "Selection", "c_Sel", "Item", "c_Itm", "Target", "Ins", "switchResponse", "RT", "RT_log"
+))
+write.table(foo, file='e4-data.txt', quote=FALSE, sep='\t')

@@ -1,0 +1,116 @@
+---
+title: "Experiment 4 of 4"
+output:
+  html_document:
+    toc: true
+    mathjax: default
+    template: default
+    theme: default
+---
+
+<style>
+table, th, td {
+    border: 1px grey;
+    border-collapse: collapse;
+    padding:2px 5px 2px 5px
+}  
+</style>
+
+```{r libs, message=FALSE, echo=FALSE}
+library(knitr); library(ggplot2); library(xtable); library(gridExtra); library(lme4); library(lmerTest);  library(data.table); library(dplyr); library(dtplyr); library(pander); library(LMERConvenienceFunctions); source('summarySEwithin2.R') 
+```
+
+Each subject saw 192 trials, being 3 cycles of 64 trials. There were 40 subjects. There were 7680 rows in the full data.
+
+Trial Procedure:
+First an instruction was presented until subjects dismissed it with a key press. Then a grey screen was presented for 1 second. Then a target was presented for 2 seconds. Then a grey screen was presented for 1 second. Then the squares with dots were presented until the subject responded, with a 10 second timeout if they did not respond.
+
+```{r getdata}
+rawdata <- read.delim('e4-data.txt')
+```
+
+dots used:
+(6,15,24);
+(16,25,34);
+(26,35,44);
+(36,45,54).
+
+```{r targets, echo=FALSE}
+target <- subset(rawdata, subset= Item=="06:15:24" & Quantity=="Small")
+target$Instruction <- target$Ins; target$Ins <- NULL
+target$Dots=target$Item;target$Item <- NULL
+target2 <- subset(target, select=c(Dots, Vagueness, Selection, Target, Instruction))
+target3 <- unique(target2[order(target$Vagueness),] )
+row.names(target3) <- NULL
+pander(target3, justify='left')
+```
+
+```{r trimat25sd}
+trimdata <- perSubjectTrim.fnc(rawdata, response='RT', subject='Subject', trim = 2.5)$data
+rtdata <- trimdata
+```
+
+```{r e4-rtplot, fig.width=7, fig.height=3, echo=F, dev='pdf'}
+rtdataplot1 <- summarySEwithin2(rtdata, measurevar="RT_log", withinvars=c("Vagueness", "Selection", "Item"), idvar="Subject")
+rtdataplot1$Condition <- as.factor(paste(sep=' ', rtdataplot1$Selection, rtdataplot1$Vagueness))
+rtplot=ggplot(rtdataplot1, aes(y=RT_logNormed, x=Item, group=Vagueness, shape=Vagueness, fill=Vagueness)) +
+  geom_line() +
+  geom_errorbar(width=.25, aes(ymin=RT_logNormed-ci, ymax=RT_logNormed+ci)) +
+  geom_point(size=3, col=1, aes(shape=Vagueness)) +
+  scale_shape_manual(name="Vagueness", values=c(21,22)) +
+  scale_fill_grey(name="Vagueness", start=0, end=1) +
+  ggtitle("Response time") +
+  ylab("Respone time (log (ms))") + 
+  xlab("") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        legend.key = element_blank(), aspect.ratio=1,
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.background=element_rect(fill=NA, color='white'),
+        strip.background=element_blank()) +
+  facet_grid(~Selection) 
+rtplot
+```
+
+```{r rtlmer, cache=TRUE}
+rtlmer = lmerTest::lmer(data=rtdata,
+                        RT_log ~ c_Vag * c_Sel + c_Itm +
+                          (1 + c_Vag * c_Sel + c_Itm | Subject))
+```
+
+```{r rtlmersummaryxtable, results='asis', cache=TRUE, echo=F}
+print(
+  xtable(
+    summary(rtlmer)$coefficients[,-3], 
+    display=c("s","f","f","f","f"),
+    digits=c(0,2,2,1,3),
+    caption="Response time model"),
+  caption.placement="top", 
+  type='html')
+```
+
+```{r seplmerforcomparison, results='asis', cache=TRUE, echo=-3}
+comparisonOnly <- subset(rtdata, subset=Selection=='Comparison')
+comparisonOnlylm <- lmerTest::lmer(data=comparisonOnly, RT_log ~ c_Vag + c_Itm + (1 + c_Vag + c_Itm | Subject))
+print(
+  xtable(
+    summary(comparisonOnlylm)$coefficients[,-3], 
+    display=c("s","f","f","f","f"),
+    digits=c(0,2,2,1,3),
+    caption="Response time model: Comparison only"),
+  caption.placement="top", 
+  type='html')
+```
+
+```{r seplmerformatching, results='asis', cache=TRUE, echo=-3}
+matchingOnly <- subset(rtdata, subset=Selection=='Matching')
+matchingOnlylm <- lmerTest::lmer(data=matchingOnly, RT_log ~ c_Vag + c_Itm + (1 + c_Vag + c_Itm | Subject))
+print(
+  xtable(
+    summary(matchingOnlylm)$coefficients[,-3], 
+    display=c("s","f","f","f","f"),
+    digits=c(0,2,2,1,3),
+    caption="Response time model: Matching only"),
+  caption.placement="top", 
+  type='html')
+```

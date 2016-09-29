@@ -1,6 +1,5 @@
-## ----gatherDataFunction, echo=FALSE--------------------------------------
 gatherData = function(number_of_valid_subjects) {
-  data_dir <- '../../experimentCode/output/'
+  data_dir <- '../experimentCode/output/'
   column.headers.df <-  head( read.table(
     paste(data_dir,'subject01.data',sep=''),
     header=TRUE),0)
@@ -14,7 +13,6 @@ gatherData = function(number_of_valid_subjects) {
   return(gathered.data)
 } # end of gatherData function
 
-## ----classifyResponseFuntion, echo=FALSE---------------------------------
 classifyResponses = function(dat) {
   # what were they expected to respond?
   dat$crossed = as.factor(paste('Con', dat$Condition, ':Quan', dat$Quantity, ':Item', dat$Item, sep=''))
@@ -235,12 +233,11 @@ processData = function(dat) {
                                 response_num, response_side, response_category, 
                                 Left, Mid, Right, Instruction, nchar_instr))
   # This data set (dat) contains *all* trials 7680 including impossible trials and is mainly for graphs comparing different removals
-  save(dat, file='data_raw.Rda')
+  #save(dat, file='data_raw.Rda')
   message('Returning processed data')
   return(dat)
 } # end of function processData
 
-## ----postProcessDataFunction, echo=FALSE---------------------------------
 postProcessData = function(dat) {
   # dd removes impossible trials from dat
   # Throw out RT = 1 and RT = 59998, and RTprev = 1 and RTprev = 59998 i.e., throw out sticky fingers and timeouts, and the trials that followed sticky fingers and timeouts since they were likely affected by unusual previous trials. Also lose impossible trials
@@ -262,35 +259,32 @@ postProcessData = function(dat) {
   dd$RTprev_raw       <- dd$RTprev
   # put dd in better column order
   dd <- subset(dd, select = c(id, Subject, Trial, Condition, Order, Quantity, Vagueness, Number, Item, discriminability, c_Trl, s_Trl, c_Itm, c_Vag, c_Num, f_Cnd, c_Ord, c_Qty, RT, RT_log, RT_raw, RTprev, RTprev_log, RTprev_raw, Exp_Num, Bline_Num, Extr_Num, Exp_side, Bline_side, Extr_side, response_num, response_side, response_category, Left, Mid, Right, Instruction, nchar_instr ))
-  save(dd, file="data_processed.Rda")
   message('Returning post processed data')
   return(dd)
 } # end of function postProcessResponses
 
-## ----getTheData----------------------------------------------------------
-# if the file data_processed.Rda already exists then load it, else do data wrangling
-if( file.exists('../data_processed.Rda') ) {
-  load('../data_processed.Rda')
-} else {
-  # declare local variables
+# if the file e2-data.txt already exists then do nowt, else make the file e2-data.txt
+if( file.exists('e2-data.txt') ) {
+  # do nothing
+} else { # do data wrangling
   number_of_valid_subjects <- 30 # = 30
   number_of_rows <- 7680 # 7680
   number_of_trials_per_subject <- number_of_rows / number_of_valid_subjects # = 256
-  # call functions
+  message('starting gatherData')
   dat <- gatherData(number_of_valid_subjects) # = 30
+  message('starting classifyData')
   dat <- classifyResponses(dat) # classify the response as expected, near, or far
+  message('starting processData')
   dat <- processData(dat) # remove impossible trials and re-do previous rt measures
+  message('starting postProcessData')
   dd  <- postProcessData(dat)
-} # end else do data wrangling
-
-
-
-# subset dd
-dd <- subset(dd, select=c(Subject, Trial, Condition, Left, Mid, Right, discriminability, 
-                          Exp_side, Bline_side, Extr_side, response_side, Instruction, 
-                          Vagueness, c_Vag, Number, c_Num, Order, c_Ord, Quantity, c_Qty, 
-                          Item, c_Itm, response_category, RT, RT_log))
-dd$isBorderline <- ifelse(dd$response_category=='borderline', TRUE, FALSE)
-
-# write plain text file
-write.table(dd, file='../data.txt')
+  message('starting subsetting')
+  dd <- subset(dd, select=c(Subject, Trial, Condition, Left, Mid, Right, 
+                            Exp_side, Bline_side, Extr_side, response_side, Instruction, 
+                            Vagueness, c_Vag, Number, c_Num, Order, c_Ord, Quantity, c_Qty, 
+                            Item, c_Itm, response_category, RT, RT_log))
+  dd$isBorderline <- ifelse(dd$response_category=='borderline', TRUE, FALSE)
+  message('writing text file e2-data.txt')
+  write.table(x=dd, "e2-data.txt", quote=FALSE, sep="\t", row.names=FALSE)
+  message('completed preprocessing')
+} # end else make the file e2-data.txt

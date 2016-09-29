@@ -75,7 +75,7 @@ combinedplote1 = ggplot(data=combined, aes(y=normed, x=Gap, group=Vgn, fill=Vgn)
   xlab("Numerical distance") + ylab(NULL) +
   geom_line() +
   geom_errorbar(width=.1, lty=1, col=1, aes(ymin=normed-ci, ymax=normed+ci)) +
-  geom_point(size=3, col=1, aes(shape=Vgn))+
+  geom_point(size=3, col=1, aes(shape=Vgn)) +
   facet_wrap(~metric, scales="free_y") +
   scale_fill_grey(name="Vagueness", start=0, end=1) +
   scale_shape_manual(name="Vagueness", values=c(21,22)) +

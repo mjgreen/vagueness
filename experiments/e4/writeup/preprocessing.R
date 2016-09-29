@@ -1,7 +1,4 @@
-Get data from the raw per-subject files if necessary.
-
-```{r, getData}
-if (file.exists('rawdata.txt')) {
+if (file.exists('e4-rawdata.txt')) {
   dat <- read.delim(file="rawdata.txt", header=T, stringsAsFactors=FALSE)
 } else {
   system(wait=TRUE, paste("head -n 1 ", "../../experimentCode","/output/", "subject01.data ", "> ", "rawdata.txt", sep=""))
@@ -314,4 +311,3 @@ foo <- subset(dd, select=c(
   "Subject", "Trial", "Condition", "Order", "Quantity", "Vagueness", "c_Vag", "Selection", "c_Sel", "Item", "c_Itm", "Target", "Ins", "switchResponse", "RT", "RT_log"
 ))
 write.table(foo, file='../data.txt')
-```

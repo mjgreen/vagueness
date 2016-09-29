@@ -305,8 +305,8 @@ A generalized linear mixed model \cite{jaeger2008categorical} was fit to the dat
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[trim = 0mm 0mm 0mm 0mm, clip, width=.49\textwidth]{images/e2rt.pdf}
-\includegraphics[trim = 0mm -23mm 0mm 0mm, clip, width=.49\textwidth]{images/e2bl.pdf}
+\includegraphics[trim = 30mm -2mm 30mm 0mm, clip, width=.49\textwidth]{images/e2-rtplot-1.pdf}
+\includegraphics[trim = 20mm -9mm 20mm 0mm, clip, width=.49\textwidth]{images/e2-blBarChart-1}
 \caption{Experiment 2 results: mean response times by condition and item, and counts of borderline case responses by condition.}
 \label{resultse2}
 \end{figure}
@@ -375,7 +375,8 @@ with sum-coded vagueness, instruction format, (and their interaction), and item 
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[trim = 0mm 30mm 0mm 10mm, clip, width=.75\textwidth]{images/rtplote3}
+\fitfigure{images/e3-rtplot-1.pdf}
+%\includegraphics[trim = 20mm 0mm 20mm 0mm, clip, width=.75\textwidth]{images/e3-rtplot-1.pdf}
 \caption{Mean response times by condition for Experiment 3 where all instructions were numeric}
 \label{resultse3}
 \end{figure}
@@ -460,7 +461,7 @@ The cost reduction account was wrong to predict main effect advantages for vague
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[trim = 0mm 30mm 0mm 10mm, clip, width=.75\textwidth]{images/rtplote4.pdf}
+\fitfigure{images/e4-rtplot-1.pdf}
 \caption{Mean response times by condition for Experiment 4}
 \label{resultse4}
 \end{figure}
@@ -514,7 +515,7 @@ vagueness is not intrinsically beneficial. On the other hand, vague expressions 
 
 A comparison may clarify the logic of the situation. In recent years a number of studies, focussing on red wine, have suggested that alcohol, consumed in low doses, may have health benefits. An alternative explanation, however, asserts that it is not the alcohol in the wine that was beneficial, but antioxidants from grapes. If this alternative explanation is correct, then alcohol may not be healthy after all.\\[2ex]
 %
-{\bf Implications for NLG systems.} Our findings suggest a re-think of the questions on which much research on the utility of vagueness rests. The question of how a particular piece of quantitative information is best conveyed through language is an important one for practical NLG. Furthermore, years of research on the logic of vagueness -- which has given rise to such logical techniques as Partial Logic (e.g, \cite{Fine}, Probabilistic Logic \cite{Edgington}, and Fuzzy Logic \cite{Zadeh} -- have primed the research community to expect that the utility of vagueness is an important part of the answer, but our findings call this expectation into question. 
+{\bf Implications for NLG systems.} Our findings suggest a re-think of the questions on which much research on the utility of vagueness rests. The question of how a particular piece of quantitative information is best conveyed through language is an important one for practical NLG. Furthermore, years of research on the logic of vagueness -- which has given rise to such logical techniques as Partial Logic \cite<e.g.,>{Fine}, Probabilistic Logic \cite{Edgington}, and Fuzzy Logic \cite{Zadeh} -- have primed the research community to expect that the utility of vagueness is an important part of the answer, but our findings call this expectation into question. 
 
 Although our own studies in this article have focussed on vagueness in descriptive Noun Phrases, it seems plausible that vagueness plays a similar role in other linguistic constructs. For example, consider air temperature. Given a temperature measurement (or prediction) as input, an NLG system might say that it was (or will be)
 %
@@ -527,13 +528,13 @@ Although our own studies in this article have focussed on vagueness in descripti
 %
 among other candidate expressions. If the linguistic literature is to be believed, then options (a) and (c) convey crisp information, whereas (b) and (d) are vague (i.e., they permit borderline cases). From our own experiments and the ones discussed in section 1, there is no evidence that the vagueness of an expression should be beneficial for hearers. Rather than asking whether a candidate expression is vague, other questions might shed more light on the NLG system's choice, similar to the ones identified in our studies. These questions might focus on the amount of information that a given expression conveys (i.e., on granularity), on the avoidance of numbers, and on the use of evaluative terms. Let's see how this might pan out for the examples at hand.
 
-First, the experiments by Mishra et al. suggest that it is important how much information is conveyed by an expression, and their findings are echoed by our own thoughts about range reduction (following Experiments 3 and 4). In the case of (a)--(d) above, it appears that (a) conveys the most detailed information (designating the smallest segment of the temperature scale), followed by (b), then (d), then (c) (e.g., 40 degrees is above 25, but at 40 Celsius the word ``warm" is likely to give way to ``hot" or ``scorching"): 
+First, the experiments by \citeauthor{Mishra01042011} suggest that it is important how much information is conveyed by an expression, and their findings are echoed by our own thoughts about range reduction (following Experiments 3 and 4). In the case of (a)--(d) above, it appears that (a) conveys the most detailed information (designating the smallest segment of the temperature scale), followed by (b), then (d), then (c) (e.g., 40 degrees is above 25, but at 40 Celsius the word ``warm" is likely to give way to ``hot" or ``scorching"): 
 %
 \begin{quote}
 $a < b < d < c$
 \end{quote}
 %
-If these hunches are correct then an {\em expert} may  to prefer expression (a), because it gives her the most detailed information on which to base her decisions. On the other hand, expression (d) (``warm") is shorter than the other three and avoids the use of numbers; our experiments suggest that this may make (d) more rapidly understood than its competitors; earlier experiments point in the same direction, given the evaluative nature of ``warm" (see our section 1 and  \cite{peters2009bringing}), which is especially important if the hearer is unfamiliar with the metric used (e.g., because she is more used to Fahrenheit). These considerations suggest that {\em non-experts} might prefer expression (d). If results of this kind were to be confirmed by experiments, they would be applicable in practical NLG, though care would need to be exercised to take the purpose of the communication into account.\footnote{One reason why ``warm" might be less preferred than these considerations suggest is that, in the weather context, some very frequently occurring numbers, such as 20 (degrees), could be relatively easy to process, analogous to the subitizable numbers of \protect\cite{trick1994small}, see our section \ref{method}. Note that in the experiments reported in this paper, the purpose of the utterances investigated was always clear (e.g., instructing people on a weight loss program \cite{Mishra01042011}; informing a patient's choice of hospital \cite{peters2009bringing}; or selecting a dot array (in our own studies).} 
+If these hunches are correct then an {\em expert} may  to prefer expression (a), because it gives her the most detailed information on which to base her decisions. On the other hand, expression (d) (``warm") is shorter than the other three and avoids the use of numbers; our experiments suggest that this may make (d) more rapidly understood than its competitors; earlier experiments point in the same direction, given the evaluative nature of ``warm" (see our section 1 and  \citeA{peters2009bringing}), which is especially important if the hearer is unfamiliar with the metric used (e.g., because she is more used to Fahrenheit). These considerations suggest that {\em non-experts} might prefer expression (d). If results of this kind were to be confirmed by experiments, they would be applicable in practical NLG, though care would need to be exercised to take the purpose of the communication into account.\footnote{One reason why ``warm" might be less preferred than these considerations suggest is that, in the weather context, some very frequently occurring numbers, such as 20 (degrees), could be relatively easy to process, analogous to the subitizable numbers of \protect\citeA{trick1994small}, see our section \ref{method}. Note that in the experiments reported in this paper, the purpose of the utterances investigated was always clear (e.g., instructing people on a weight loss program \cite{Mishra01042011}; informing a patient's choice of hospital \cite{peters2009bringing}; or selecting a dot array (in our own studies).} 
 
 One way to see why vagueness (as defined in our Introduction) may not matter much for NLG -- and for human communication -- is the following thought experiment. Suppose a group of speakers understand the word ``warm" as vague, agreeing that temperatures above 26 count as warm, and temperatures below 24 do not count as warm, but considering temperatures between 24 and 26 as borderline cases. Now one day these speakers agree to sharpen up their definition deciding that, henceforth, ``warm" means ``$>25$ degrees" (as in (c) above): this decision resolves the borderline cases, while everything else remains the same. It seems unlikely that this change in language use, from a vague meaning to a crisp one (i.e., one that has no borderline cases anymore), would lower the utility of the word. Our experimental findings are consistent with this idea.
 
