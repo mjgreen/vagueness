@@ -13,7 +13,6 @@
 **/*.synctex.gz
 **/*.ttt
 **/*\_cache
-**/*\_files
 **/octave-core
 **/diary
 papers/springer-chapter/book.bbl
